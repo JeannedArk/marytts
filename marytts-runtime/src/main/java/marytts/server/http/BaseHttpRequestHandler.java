@@ -51,6 +51,8 @@ import marytts.util.http.Address;
 import marytts.util.string.StringUtils;
 import marytts.vocalizations.VocalizationSynthesizer;
 
+import org.apache.cxf.rs.security.cors.CorsHeaderConstants;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpException;
@@ -86,7 +88,6 @@ public abstract class BaseHttpRequestHandler extends SimpleNHttpRequestHandler i
 		super();
 		logger = MaryUtils.getLogger("server");
 		requestMap = Collections.synchronizedMap(new HashMap<String, Object[]>());
-
 	}
 
 	/**
@@ -135,6 +136,9 @@ public abstract class BaseHttpRequestHandler extends SimpleNHttpRequestHandler i
 			}
 
 			// Parse request and create appropriate response
+			// Adjustment so that fetching the data over network works in our custom application
+			// which should also run in the browser
+			response.addHeader(CorsHeaderConstants.HEADER_AC_ALLOW_ORIGIN, "*");
 			handleClientRequest(absPath, queryItems, response, serverAddressAtClient);
 
 		} catch (RuntimeException re) {
